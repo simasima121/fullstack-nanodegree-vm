@@ -22,7 +22,7 @@ def deleteMatches():
     """Remove all the match records from the database."""
     DB = psycopg2.connect("dbname=tournament")
     c = DB.cursor()
-    c.execute("DELETE FROM matches")
+    c.execute("DELETE FROM matches *")
     #c.execute("SELECT * FROM matches")
 
     DB.close()
@@ -33,7 +33,7 @@ def deletePlayers():
 
     DB = psycopg2.connect("dbname=tournament")
     c = DB.cursor()
-    c.execute("DELETE FROM players")
+    c.execute("DELETE FROM players *")
     #c.execute("SELECT * FROM matches")
 
     DB.close()
@@ -41,7 +41,19 @@ def deletePlayers():
 
 def countPlayers():
     """Returns the number of players currently registered."""
+    DB = psycopg2.connect("dbname=tournament")
+    c = DB.cursor()
+    c.execute("SELECT COUNT(*) FROM players")
+    # fetching results from db and storing in results var
+    results = c.fetchall()
+    #error processing to see what count players is storing
+    print "Count players is returning: {}".format(results)
+    for row in results:
+        return row[0]
 
+    DB.close()
+
+    return results
 
 def registerPlayer(name):
     """Adds a player to the tournament database.
@@ -54,12 +66,12 @@ def registerPlayer(name):
     """
 
     ## Database connection
-    DB = psycopg2.connect("dbname=tournament")
-    c = DB.cursor()
-    c.execute("INSERT INTO players (name) VALUES (%s)", (bleach.clean(content),))
+    #DB = psycopg2.connect("dbname=tournament")
+    #c = DB.cursor()
+    #c.execute("INSERT INTO players (name) VALUES (%s)", (bleach.clean(name),))
 
-    DB.commit() 
-    DB.close()
+    #DB.commit() 
+    #DB.close()
 
 
 def playerStandings():
