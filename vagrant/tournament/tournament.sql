@@ -23,14 +23,13 @@ have another table with player id, their wins, the matches they have played
 
 */
 
-
-
 CREATE DATABASE tournament;
 \c tournament
-CREATE TABLE players( id SERIAL,
+CREATE TABLE players( id SERIAL PRIMARY KEY,
 											name TEXT);
 
-CREATE TABLE matches( id SERIAL,
-										wins INTEGER,
-										games_played INTEGER);
+CREATE TABLE matches( player_1_id SERIAL REFERENCES players (id),
+											player_2_id SERIAL REFERENCES players (id),
+										  wins INTEGER,
+										  games_played INTEGER);
 
