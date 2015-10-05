@@ -3,7 +3,14 @@
 # tournament.py -- implementation of a Swiss-system tournament
 #
 
+#- when players add to tournament, database should create unique id for each player using serial
+#- SQL aggregation when wanting to count or adding up
+#- try using loop in database queries
+#- if database calls get confusing use views
+
+
 import psycopg2
+import bleach
 
 
 def connect():
@@ -13,10 +20,23 @@ def connect():
 
 def deleteMatches():
     """Remove all the match records from the database."""
+    DB = psycopg2.connect("dbname=tournament")
+    c = DB.cursor()
+    c.execute("DELETE FROM matches")
+    #c.execute("SELECT * FROM matches")
+
+    DB.close()
 
 
 def deletePlayers():
     """Remove all the player records from the database."""
+
+    DB = psycopg2.connect("dbname=tournament")
+    c = DB.cursor()
+    c.execute("DELETE FROM players")
+    #c.execute("SELECT * FROM matches")
+
+    DB.close()
 
 
 def countPlayers():
@@ -32,6 +52,14 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
+
+    ## Database connection
+    DB = psycopg2.connect("dbname=tournament")
+    c = DB.cursor()
+    c.execute("INSERT INTO players (name) VALUES (%s)", (bleach.clean(content),))
+
+    DB.commit() 
+    DB.close()
 
 
 def playerStandings():
