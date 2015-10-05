@@ -25,7 +25,8 @@ def deleteMatches():
     c.execute("DELETE FROM matches *")
     #c.execute("SELECT * FROM matches")
 
-    DB.close()
+    DB.commit()
+    DB.close();
 
 
 def deletePlayers():
@@ -34,9 +35,9 @@ def deletePlayers():
     DB = psycopg2.connect("dbname=tournament")
     c = DB.cursor()
     c.execute("DELETE FROM players *")
-    #c.execute("SELECT * FROM matches")
 
-    DB.close()
+    DB.commit()
+    DB.close();
 
 
 def countPlayers():
@@ -51,7 +52,7 @@ def countPlayers():
     for row in results:
         return row[0]
 
-    DB.close()
+    DB.close();
 
     return results
 
@@ -66,12 +67,12 @@ def registerPlayer(name):
     """
 
     ## Database connection
-    #DB = psycopg2.connect("dbname=tournament")
-    #c = DB.cursor()
-    #c.execute("INSERT INTO players (name) VALUES (%s)", (bleach.clean(name),))
+    DB = psycopg2.connect("dbname=tournament")
+    c = DB.cursor()
+    c.execute("INSERT INTO players (name) VALUES (%s)", (bleach.clean(name),))
 
-    #DB.commit() 
-    #DB.close()
+    DB.commit()
+    DB.close();
 
 
 def playerStandings():
