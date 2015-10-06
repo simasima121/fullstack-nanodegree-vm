@@ -70,7 +70,7 @@ def registerPlayer(name):
     DB = psycopg2.connect("dbname=tournament")
     c = DB.cursor()
     c.execute("INSERT INTO players (name) VALUES (%s)", (bleach.clean(name),))
-    #c.execute("INSERT INTO matches (player_id) SELECT id FROM players")
+    c.execute("INSERT INTO matches (player_id) SELECT id FROM players where players.name = (%s)", (bleach.clean(name),))
 
     DB.commit()
     DB.close();
@@ -107,7 +107,8 @@ def playerStandings():
     
     results = c.fetchall()
     
-    #print "PlayerStandings is returning: {}".format(results)
+    print "PlayerStandings is returning: {}".format(results)
+
 
     DB.close();
 
@@ -121,6 +122,14 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
+    ## Database connection
+    #DB = psycopg2.connect("dbname=tournament")
+    #c = DB.cursor()
+    #c.execute("INSERT INTO players (name) VALUES (%s)", (bleach.clean(name),))
+    #c.execute("INSERT INTO matches (player_id) SELECT id FROM players")
+
+    #DB.commit()
+    #DB.close();
  
  
 def swissPairings():

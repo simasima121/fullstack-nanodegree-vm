@@ -28,8 +28,7 @@ CREATE DATABASE tournament;
 CREATE TABLE players( id SERIAL PRIMARY KEY,
 											name TEXT);
 
-CREATE TABLE matches( player_1_id SERIAL REFERENCES players (id),
-											player_2_id SERIAL REFERENCES players (id),
+CREATE TABLE matches( player_id SERIAL REFERENCES players (id) ON DELETE CASCADE,
 										  wins INTEGER,
 										  games_played INTEGER);
 
