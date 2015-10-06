@@ -23,7 +23,6 @@ def deleteMatches():
     DB = psycopg2.connect("dbname=tournament")
     c = DB.cursor()
     c.execute("DELETE FROM matches *")
-    #c.execute("SELECT * FROM matches")
 
     DB.commit()
     DB.close();
@@ -35,6 +34,7 @@ def deletePlayers():
     DB = psycopg2.connect("dbname=tournament")
     c = DB.cursor()
     c.execute("DELETE FROM players *")
+    #c.execute("DELETE FROM matches id")
 
     DB.commit()
     DB.close();
@@ -70,6 +70,7 @@ def registerPlayer(name):
     DB = psycopg2.connect("dbname=tournament")
     c = DB.cursor()
     c.execute("INSERT INTO players (name) VALUES (%s)", (bleach.clean(name),))
+    #c.execute("INSERT INTO matches (player_id) SELECT id FROM players")
 
     DB.commit()
     DB.close();
@@ -88,6 +89,29 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
+
+    DB = psycopg2.connect("dbname=tournament")
+    c = DB.cursor()
+
+    #c.execute("UPDATE matches SET wins = 0, games_played = 0 WHERE wins = null")
+    #c.execute("UPDATE matches SET wins = 0, games_played = 0")
+
+    c.execute("SELECT players.id, players.name, \
+               COALESCE( matches.wins, '0') as wins, \
+               COALESCE( matches.games_played, '0') as games_played \
+               FROM players LEFT JOIN matches \
+               ON players.id = matches.player_id \
+               ORDER BY players.id")
+
+    #c.execute("SELECT players.id, players.name, COALESCE( matches.wins, '0') as wins,COALESCE( matches.games_played, '0') as games_played FROM players LEFT JOIN matches ON players.id = matches.player_id ORDER BY players.id")
+    
+    results = c.fetchall()
+    
+    #print "PlayerStandings is returning: {}".format(results)
+
+    DB.close();
+
+    return results
 
 
 def reportMatch(winner, loser):
