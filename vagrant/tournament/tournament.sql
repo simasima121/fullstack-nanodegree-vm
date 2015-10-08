@@ -6,29 +6,20 @@
 -- You can write comments in this file by starting them with two dashes, like
 -- these lines here.
 
-/* what needs to be in the database?
-
-1) players - id (serial), name, who they've played (matches), their score (playerStandings), 
-who won/lost (reportMatch), who next opponent is (swissPairings)
-
-2) unique id for tournaments
-
-- when players add to tournament, database should create unique id for each player using serial
-- SQL aggregation when wanting to count or adding up
-- try using loop in database queries
-- if database calls get confusing use views
-
-will have player table with name and id
-have another table with player id, their wins, the matches they have played
-
-*/
+DROP DATABASE IF EXISTS tournament;
 
 CREATE DATABASE tournament;
 \c tournament
 CREATE TABLE players( id SERIAL PRIMARY KEY,
-											name TEXT);
+											name TEXT,
+											wins INTEGER DEFAULT 0,
+											games_played INTEGER DEFAULT 0);
 
-CREATE TABLE matches( player_id SERIAL REFERENCES players (id) ON DELETE CASCADE,
-										  wins INTEGER DEFAULT 0,
-										  games_played INTEGER DEFAULT 0);
+CREATE TABLE matches( winning_player SERIAL,
+											losing_player SERIAL);
 
+/*CREATE VIEW player_score AS 
+                SELECT players.id, players.name, matches.wins,
+                			 matches.games_played
+                FROM players LEFT JOIN matches
+                ON players.id = matches.player_id;*/
