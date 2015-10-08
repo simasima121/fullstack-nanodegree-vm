@@ -45,10 +45,11 @@ def countPlayers():
     DB = psycopg2.connect("dbname=tournament")
     c = DB.cursor()
     c.execute("SELECT COUNT(*) FROM players")
+    
     # fetching results from db and storing in results var
     results = c.fetchall()
-    #error processing to see what count players is storing
-    print "Count players is returning: {}".format(results)
+        
+    #print "Count players is returning: {}".format(results)
     for row in results:
         return row[0]
 
@@ -70,7 +71,9 @@ def registerPlayer(name):
     DB = psycopg2.connect("dbname=tournament")
     c = DB.cursor()
     c.execute("INSERT INTO players (name) VALUES (%s)", (bleach.clean(name),))
-    c.execute("INSERT INTO matches (player_id) SELECT id FROM players where players.name = (%s)", (bleach.clean(name),))
+    c.execute("INSERT INTO matches (player_id) \
+               SELECT id FROM players \
+               WHERE players.name = (%s)", (bleach.clean(name),))
 
     DB.commit()
     DB.close();
@@ -93,21 +96,15 @@ def playerStandings():
     DB = psycopg2.connect("dbname=tournament")
     c = DB.cursor()
 
-    #c.execute("UPDATE matches SET wins = 0, games_played = 0 WHERE wins = null")
-    #c.execute("UPDATE matches SET wins = 0, games_played = 0")
-
-    c.execute("SELECT players.id, players.name, \
-               COALESCE( matches.wins, '0') as wins, \
-               COALESCE( matches.games_played, '0') as games_played \
+    c.execute("SELECT players.id, players.name,\
+                      matches.wins, matches.games_played \
                FROM players LEFT JOIN matches \
                ON players.id = matches.player_id \
                ORDER BY players.id")
-
-    #c.execute("SELECT players.id, players.name, COALESCE( matches.wins, '0') as wins,COALESCE( matches.games_played, '0') as games_played FROM players LEFT JOIN matches ON players.id = matches.player_id ORDER BY players.id")
     
     results = c.fetchall()
     
-    print "PlayerStandings is returning: {}".format(results)
+    #print "PlayerStandings is returning: {}".format(results)
 
 
     DB.close();
@@ -122,14 +119,18 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
-    ## Database connection
-    #DB = psycopg2.connect("dbname=tournament")
-    #c = DB.cursor()
-    #c.execute("INSERT INTO players (name) VALUES (%s)", (bleach.clean(name),))
-    #c.execute("INSERT INTO matches (player_id) SELECT id FROM players")
 
-    #DB.commit()
-    #DB.close();
+    # create a row in the matches table, recording who won
+    ## Database connection
+    DB = psycopg2.connect("dbname=tournament")
+    c = DB.cursor()
+
+    c.execute("UPDATE matches SET games_played = games_played + 1 WHERE matches.player_id = (%s)", (bleach.clean(winner),))
+    c.execute("UPDATE matches SET wins = wins + 1 WHERE matches.player_id = (%s)", (bleach.clean(winner),))
+    c.execute("UPDATE matches SET games_played = games_played + 1 WHERE matches.player_id = (%s)", (bleach.clean(loser),))
+    
+    DB.commit()
+    DB.close();
  
  
 def swissPairings():
@@ -147,5 +148,26 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+    DB = psycopg2.connect("dbname=tournament")
+    c = DB.cursor()
+
+    c.execute("CREATE VIEW player_score AS \
+                SELECT players.id, players.name,\
+                       matches.wins, matches.games_played\
+                FROM players LEFT JOIN matches\
+                ON players.id = matches.player_id ")
+
+    c.execute("SELECT a.id, a.name,b.id,b.name \
+               FROM player_score AS a,player_score AS b\
+               WHERE a.wins = b.wins AND a.id < b.id")
+
+    results = c.fetchall()
+
+    #print "swissPairings is returning: {}".format(results)
+
+    DB.close();
+
+    return results
+
 
 
