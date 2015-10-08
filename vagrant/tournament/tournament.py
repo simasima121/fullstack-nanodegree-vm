@@ -87,19 +87,11 @@ def playerStandings():
     DB = connect()
     c = DB.cursor()
 
-    c.execute("SELECT players.id, players.name,\
-                      matches.wins, matches.games_played \
-               FROM players LEFT JOIN matches \
-               ON players.id = matches.player_id \
-               ORDER BY players.id")
+    c.execute("SELECT * FROM players ORDER BY wins DESC")
     
     results = c.fetchall()
-    
-    #print "PlayerStandings is returning: {}".format(results)
-
-
+    print "PlayerStandings is returning: {}".format(results)
     DB.close();
-
     return results
 
 
@@ -116,15 +108,17 @@ def reportMatch(winner, loser):
     DB = connect()
     c = DB.cursor()
 
-    c.execute("UPDATE matches \
+    c.execute("UPDATE players \
+               SET games_played = games_played + 1, \
+                   wins = wins + 1 \
+               WHERE players.id = (%s)", (winner,))
+
+    c.execute("UPDATE players \
                SET games_played = games_played + 1 \
-               WHERE matches.player_id = (%s)", (bleach.clean(winner),))
-    c.execute("UPDATE matches \
-               SET wins = wins + 1 \
-               WHERE matches.player_id = (%s)", (bleach.clean(winner),))
-    c.execute("UPDATE matches \
-               SET games_played = games_played + 1 \
-               WHERE matches.player_id = (%s)", (bleach.clean(loser),))
+               WHERE players.id = (%s)", (loser,))
+
+    c.execute("INSERT INTO matches (winning_id, losing_id) \
+               VALUES (%s, %s)", (winner, loser,))
     
     DB.commit()
     DB.close();
