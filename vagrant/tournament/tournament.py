@@ -120,14 +120,20 @@ def reportMatch(winner, loser):
       loser:  the id number of the player who lost
     """
 
-    # create a row in the matches table, recording who won
+    # updating rows in the matches table
     ## Database connection
     DB = psycopg2.connect("dbname=tournament")
     c = DB.cursor()
 
-    c.execute("UPDATE matches SET games_played = games_played + 1 WHERE matches.player_id = (%s)", (bleach.clean(winner),))
-    c.execute("UPDATE matches SET wins = wins + 1 WHERE matches.player_id = (%s)", (bleach.clean(winner),))
-    c.execute("UPDATE matches SET games_played = games_played + 1 WHERE matches.player_id = (%s)", (bleach.clean(loser),))
+    c.execute("UPDATE matches \
+               SET games_played = games_played + 1 \
+               WHERE matches.player_id = (%s)", (bleach.clean(winner),))
+    c.execute("UPDATE matches \
+               SET wins = wins + 1 \
+               WHERE matches.player_id = (%s)", (bleach.clean(winner),))
+    c.execute("UPDATE matches \
+               SET games_played = games_played + 1 \
+               WHERE matches.player_id = (%s)", (bleach.clean(loser),))
     
     DB.commit()
     DB.close();
