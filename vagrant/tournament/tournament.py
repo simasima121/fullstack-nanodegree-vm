@@ -138,9 +138,6 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
-    DB = connect()
-    c = DB.cursor()
-
     standings = playerStandings()
     results = []
 
