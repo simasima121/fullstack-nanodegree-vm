@@ -90,7 +90,7 @@ def playerStandings():
     c.execute("SELECT * FROM players ORDER BY wins DESC")
     
     results = c.fetchall()
-    print "PlayerStandings is returning: {}".format(results)
+    #print "PlayerStandings is returning: {}".format(results)
     DB.close();
     return results
 
@@ -103,7 +103,6 @@ def reportMatch(winner, loser):
       loser:  the id number of the player who lost
     """
 
-    # updating rows in the matches table
     ## Database connection
     DB = connect()
     c = DB.cursor()
@@ -142,15 +141,11 @@ def swissPairings():
     DB = connect()
     c = DB.cursor()
 
-    c.execute("SELECT a.id, a.name,b.id,b.name \
-               FROM player_score AS a,player_score AS b\
-               WHERE a.wins = b.wins AND a.id < b.id")
+    standings = playerStandings()
+    results = []
 
-    results = c.fetchall()
-
-    #print "swissPairings is returning: {}".format(results)
-
-    DB.close();
+    for p1, p2 in zip(standings[0::2], standings[1::2]):
+        results.append((p1[0], p1[1], p2[0], p2[1]))
 
     return results
 

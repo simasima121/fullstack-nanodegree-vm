@@ -15,11 +15,6 @@ CREATE TABLE players( id SERIAL PRIMARY KEY,
 											wins INTEGER DEFAULT 0,
 											games_played INTEGER DEFAULT 0);
 
-CREATE TABLE matches( winning_player SERIAL,
-											losing_player SERIAL);
+CREATE TABLE matches( winning_id INTEGER,
+											losing_id INTEGER);
 
-/*CREATE VIEW player_score AS 
-                SELECT players.id, players.name, matches.wins,
-                			 matches.games_played
-                FROM players LEFT JOIN matches
-                ON players.id = matches.player_id;*/
