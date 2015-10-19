@@ -27,7 +27,7 @@ class MenuItem(Base):
 
     @property
     def serialize(self):
-        #returns object data in easily serializable format
+        """returns object data in easily serializable format"""
         return {
             'name': self.name,
             'description': self.description,
