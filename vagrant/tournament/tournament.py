@@ -6,7 +6,7 @@
 #- when players add to tournament, database should create unique id for each player using serial
 #- SQL aggregation when wanting to count or adding up
 #- try using loop in database queries
-#- if database calls get confusing use views
+#- if database calls get confusing use views test test
 
 
 import psycopg2
